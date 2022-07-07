@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+
+from .api.logs import add_log
+from .api.redis_helper import redis_helper
 from .models import Post
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404
@@ -24,7 +27,9 @@ def post_new(request):
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()
+            post.write_on_chain()
             post.save()
+            add_log(f'{request.user}', post.published_date, f'{request.user} ha creato un post', 'POST')
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm()
@@ -40,6 +45,8 @@ def post_edit(request, pk):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
+            add_log(f'{request.user}', post.published_date, f'{request.user} ha modificato un post', 'PUT')
+
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)

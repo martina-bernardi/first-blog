@@ -16,5 +16,12 @@
         {% endif %}
         <h2>{{ post.title }}</h2>
         <p>{{ post.text|linebreaksbr }}</p>
+
+        {% if post.hash != null %}
+        <footer>
+          <p>Hash: {{post.hash}}</p>
+          <p><a href="https://ropsten.etherscan.io/tx/{{post.txId}}">Transaction Data</a></p>
+        </footer>
+        {% endif %}
     </article>
 {% endblock %}
